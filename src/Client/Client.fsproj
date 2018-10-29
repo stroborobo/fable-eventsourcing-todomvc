@@ -4,7 +4,9 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Client.fs" />
+        <Compile Include="Model.fs" />
+        <Compile Include="View.fs" />
+        <Compile Include="App.fs" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.fsproj" />
