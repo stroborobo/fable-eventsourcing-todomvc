@@ -17,8 +17,7 @@ let deleteItem history id =
 let executeItem item command =
     match command with
     | ChangeTitle title ->
-        let itemEvent = ItemTitleChanged title
-        [ ItemChanged (item.Id, itemEvent) ]
+        [ ItemChanged (item.Id, ItemTitleChanged title) ]
     | SetDone ->
         if item.Done then [ Error AlreadyDone]
         else [ ItemChanged (item.Id, ItemDone) ]

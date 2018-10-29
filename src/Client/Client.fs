@@ -13,21 +13,35 @@ open Todo.Domain
 open Todo.Domain.Types
 
 
-type Model = TodoList
+type Model =
+    { EventLog: Event list
+      TodoList: TodoList }
+
+let initialModel : Model =
+    { EventLog = []
+      TodoList = emptyTodoList }
 
 type Msg =
+    | DomainCommand of Command
     | DomainEvent of Event
-    | NoOp
 
 let init () =
-    emptyTodoList, Cmd.none
+    initialModel, Cmd.none
 
 let update msg model =
     match msg with
+    | DomainCommand cmd ->
+        let cmd =
+            Behaviour.execute model.EventLog cmd
+            |> List.map (DomainEvent >> Cmd.ofMsg)
+            |> Cmd.batch
+        model, cmd
     | DomainEvent event ->
-        let nextModel = Projections.apply model event
+        let nextModel =
+            { model with
+                TodoList = Projections.apply model.TodoList event
+                EventLog = model.EventLog @ [event] }
         nextModel, Cmd.none
-    | NoOp -> model, Cmd.none
 
 let view model dispatch =
     div [] []
