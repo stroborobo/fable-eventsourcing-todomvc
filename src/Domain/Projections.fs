@@ -27,12 +27,12 @@ let apply todoList event =
     | TaskDeleted id ->
         todoList
         |> List.filter (fun item -> item.Id <> id)
-    | DoneCleared ->
-        todoList
-        |> List.filter (fun item -> not item.Done)
     | AllDone value ->
         todoList
         |> List.map (fun task -> { task with Done = value })
+    | DoneCleared ->
+        todoList
+        |> List.filter (fun item -> not item.Done)
     | Error _ -> todoList
 
 let todoListState (history: Event list) =

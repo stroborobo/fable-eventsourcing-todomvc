@@ -54,3 +54,4 @@ type Command =
     | ChangeTask of TaskId * TaskCommand
     | DeleteTask of TaskId
     | SetAllDone of bool
+    | ClearDone

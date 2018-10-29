@@ -38,10 +38,18 @@ let setAllDone history value =
     | [] -> [ Error NoTaskFound ]
     | model ->
         let hasDifferences = model |> List.forall (fun t -> t.Done <> value)
-        match (hasDifferences, value) with
+        match hasDifferences, value with
         | false, false -> [ Error NotDone ]
         | false, true -> [ Error AlreadyDone ]
         | true, _ -> [ AllDone value ]
+
+let clearDone history =
+    history
+    |> todoListState
+    |> List.filter (fun t -> t.Done)
+    |> function
+    | [] -> [ Error NoTaskFound ]
+    | _ -> [ DoneCleared ]
 
 let execute history command =
     match command with
@@ -53,3 +61,5 @@ let execute history command =
         changeTask history id itemCommand
     | SetAllDone value ->
         setAllDone history value
+    | ClearDone ->
+        clearDone history
