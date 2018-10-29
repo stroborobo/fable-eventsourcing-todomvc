@@ -24,17 +24,16 @@ let apply todoList event =
         |> List.singleton
         |> (@) todoList
     | ItemChanged (id, event) ->
-        todoList 
+        todoList
         |> replaceItem id (itemApply event)
     | ItemDeleted id ->
         todoList
         |> List.filter (fun item -> item.Id <> id)
     | DoneCleared ->
-        todoList 
+        todoList
         |> List.filter (fun item -> not item.Done)
     | Error _ -> todoList
-        
- 
+
 let todoListState (history: Event list) =
     history
     |> List.fold apply emptyTodoList

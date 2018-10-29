@@ -9,21 +9,14 @@ open Microsoft.Extensions.DependencyInjection
 
 open FSharp.Control.Tasks.V2
 open Giraffe
-open Shared
 
 open Giraffe.Serialization
 
 let publicPath = Path.GetFullPath "../Client/public"
 let port = 8085us
 
-let getInitCounter () : Task<Counter> = task { return 42 }
 let webApp =
-    route "/api/init" >=>
-        fun next ctx ->
-            task {
-                let! counter = getInitCounter()
-                return! Successful.OK counter next ctx
-            }
+    choose []
 
 let configureApp (app : IApplicationBuilder) =
     app.UseDefaultFiles()

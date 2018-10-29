@@ -2,6 +2,9 @@ module Todo.Domain.Types
 
 open System
 
+
+// MODEL
+
 type ItemId = TodoItemId of Guid
 
 type Item =
@@ -19,12 +22,13 @@ let createEmptyItem () =
 let emptyTodoList = []
 
 
+// EVENTS
+
 type Error =
     | TitleEmpty
     | AlreadyDone
     | NotDone
     | NoItemFound
-
 
 type ItemEvent =
     | ItemTitleChanged of string
@@ -38,6 +42,8 @@ type Event =
     | DoneCleared
     | Error of Error
 
+
+// COMMANDS
 
 type ItemCommand =
     | ChangeTitle of string
