@@ -3,41 +3,41 @@ module Todo.Domain.Behaviour
 open Types
 open Projections
 
-let addItem history title =
-    [ ItemAdded title ]
+let addTask history title =
+    [ TaskAdded title ]
 
-let deleteItem history id =
+let deleteTask history id =
     history
     |> todoListState
     |> List.tryFind (fun i -> i.Id = id)
     |> function
-    | None -> [ Error NoItemFound ]
-    | Some _ -> [ ItemDeleted id ]
+    | None -> [ Error NoTaskFound ]
+    | Some _ -> [ TaskDeleted id ]
 
-let executeItem item command =
+let executeTask item command =
     match command with
     | ChangeTitle title ->
-        [ ItemChanged (item.Id, ItemTitleChanged title) ]
+        [ TaskChanged (item.Id, TitleChanged title) ]
     | SetDone ->
         if item.Done then [ Error AlreadyDone]
-        else [ ItemChanged (item.Id, ItemDone) ]
+        else [ TaskChanged (item.Id, Done) ]
     | SetUndone ->
         if item.Done then [ Error NotDone]
-        else [ ItemChanged (item.Id, ItemUndone) ]
+        else [ TaskChanged (item.Id, Undone) ]
 
-let changeItem history id itemCommand =
+let changeTask history id itemCommand =
     history
     |> todoListState
     |> List.tryFind (fun i -> i.Id = id)
     |> function
-    | Some item -> executeItem item itemCommand
-    | None -> [ Error NoItemFound ]
+    | Some item -> executeTask item itemCommand
+    | None -> [ Error NoTaskFound ]
 
 let execute history command =
     match command with
-    | AddItem title ->
-        addItem history title
-    | DeleteItem id ->
-        deleteItem history id
-    | ChangeItem (id, itemCommand) ->
-        changeItem history id itemCommand
+    | AddTask title ->
+        addTask history title
+    | DeleteTask id ->
+        deleteTask history id
+    | ChangeTask (id, itemCommand) ->
+        changeTask history id itemCommand

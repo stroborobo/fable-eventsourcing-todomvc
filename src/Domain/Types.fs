@@ -5,17 +5,17 @@ open System
 
 // MODEL
 
-type ItemId = TodoItemId of Guid
+type TaskId = TaskId of Guid
 
-type Item =
-    { Id: ItemId
+type Task =
+    { Id: TaskId
       Title: string
       Done: bool }
 
-type TodoList = Item list
+type TodoList = Task list
 
-let createEmptyItem () =
-    { Id = Guid.NewGuid() |> TodoItemId
+let createEmptyTask () =
+    { Id = Guid.NewGuid() |> TaskId
       Title = ""
       Done = false }
 
@@ -28,29 +28,29 @@ type Error =
     | TitleEmpty
     | AlreadyDone
     | NotDone
-    | NoItemFound
+    | NoTaskFound
 
-type ItemEvent =
-    | ItemTitleChanged of string
-    | ItemDone
-    | ItemUndone
+type TaskEvent =
+    | TitleChanged of string
+    | Done
+    | Undone
 
 type Event =
-    | ItemAdded of string
-    | ItemChanged of ItemId * ItemEvent
-    | ItemDeleted of ItemId
+    | TaskAdded of string
+    | TaskChanged of TaskId * TaskEvent
+    | TaskDeleted of TaskId
     | DoneCleared
     | Error of Error
 
 
 // COMMANDS
 
-type ItemCommand =
+type TaskCommand =
     | ChangeTitle of string
     | SetDone
     | SetUndone
 
 type Command =
-    | AddItem of string
-    | ChangeItem of ItemId * ItemCommand
-    | DeleteItem of ItemId
+    | AddTask of string
+    | ChangeTask of TaskId * TaskCommand
+    | DeleteTask of TaskId

@@ -4,14 +4,14 @@ open Types
 
 let private itemApply event item =
     match event with
-    | ItemTitleChanged title ->
+    | TitleChanged title ->
         { item with Title = title }
-    | ItemDone ->
+    | Done ->
         { item with Done = true }
-    | ItemUndone ->
+    | Undone ->
         { item with Done = false }
 
-let private replaceItem id (fn: Item -> Item) items =
+let private replaceTask id (fn: Task -> Task) items =
     items
     |> List.map (fun item ->
         if item.Id <> id then item
@@ -19,14 +19,14 @@ let private replaceItem id (fn: Item -> Item) items =
 
 let apply todoList event =
     match event with
-    | ItemAdded title ->
-        { createEmptyItem() with Title = title }
+    | TaskAdded title ->
+        { createEmptyTask() with Title = title }
         |> List.singleton
         |> (@) todoList
-    | ItemChanged (id, event) ->
+    | TaskChanged (id, event) ->
         todoList
-        |> replaceItem id (itemApply event)
-    | ItemDeleted id ->
+        |> replaceTask id (itemApply event)
+    | TaskDeleted id ->
         todoList
         |> List.filter (fun item -> item.Id <> id)
     | DoneCleared ->
