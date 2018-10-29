@@ -3,7 +3,7 @@ module Todo.Domain.Behaviour
 open Types
 open Projections
 
-let addTask history title =
+let addTask title =
     [ TaskAdded title ]
 
 let deleteTask history id =
@@ -18,12 +18,10 @@ let executeTask item command =
     match command with
     | ChangeTitle title ->
         [ TaskChanged (item.Id, TitleChanged title) ]
-    | SetDone ->
-        if item.Done then [ Error AlreadyDone]
-        else [ TaskChanged (item.Id, Done) ]
-    | SetUndone ->
-        if item.Done then [ Error NotDone]
-        else [ TaskChanged (item.Id, Undone) ]
+    | SetDone value ->
+        if value && item.Done then [ Error AlreadyDone]
+        elif not value && not item.Done then [ Error NotDone]
+        else [ TaskChanged (item.Id, Done value) ]
 
 let changeTask history id itemCommand =
     history
@@ -33,11 +31,25 @@ let changeTask history id itemCommand =
     | Some item -> executeTask item itemCommand
     | None -> [ Error NoTaskFound ]
 
+let setAllDone history value =
+    history
+    |> todoListState
+    |> function
+    | [] -> [ Error NoTaskFound ]
+    | model ->
+        let hasDifferences = model |> List.forall (fun t -> t.Done <> value)
+        match (hasDifferences, value) with
+        | false, false -> [ Error NotDone ]
+        | false, true -> [ Error AlreadyDone ]
+        | true, _ -> [ AllDone value ]
+
 let execute history command =
     match command with
     | AddTask title ->
-        addTask history title
+        addTask title
     | DeleteTask id ->
         deleteTask history id
     | ChangeTask (id, itemCommand) ->
         changeTask history id itemCommand
+    | SetAllDone value ->
+        setAllDone history value

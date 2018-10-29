@@ -6,10 +6,8 @@ let private itemApply event item =
     match event with
     | TitleChanged title ->
         { item with Title = title }
-    | Done ->
-        { item with Done = true }
-    | Undone ->
-        { item with Done = false }
+    | Done value ->
+        { item with Done = value }
 
 let private replaceTask id (fn: Task -> Task) items =
     items
@@ -32,6 +30,9 @@ let apply todoList event =
     | DoneCleared ->
         todoList
         |> List.filter (fun item -> not item.Done)
+    | AllDone value ->
+        todoList
+        |> List.map (fun task -> { task with Done = value })
     | Error _ -> todoList
 
 let todoListState (history: Event list) =

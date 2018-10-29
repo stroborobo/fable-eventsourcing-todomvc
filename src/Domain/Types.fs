@@ -32,13 +32,13 @@ type Error =
 
 type TaskEvent =
     | TitleChanged of string
-    | Done
-    | Undone
+    | Done of bool
 
 type Event =
     | TaskAdded of string
     | TaskChanged of TaskId * TaskEvent
     | TaskDeleted of TaskId
+    | AllDone of bool
     | DoneCleared
     | Error of Error
 
@@ -47,10 +47,10 @@ type Event =
 
 type TaskCommand =
     | ChangeTitle of string
-    | SetDone
-    | SetUndone
+    | SetDone of bool
 
 type Command =
     | AddTask of string
     | ChangeTask of TaskId * TaskCommand
     | DeleteTask of TaskId
+    | SetAllDone of bool
