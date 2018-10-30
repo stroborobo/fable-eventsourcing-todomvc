@@ -4,8 +4,11 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="Import/Fable.Import.Browser.Patch.fs" />
+        <Compile Include="Import/Fable.Import.SignalR.fs" />
         <Compile Include="Model.fs" />
         <Compile Include="View.fs" />
+        <Compile Include="Subscription.fs" />
         <Compile Include="App.fs" />
     </ItemGroup>
     <ItemGroup>

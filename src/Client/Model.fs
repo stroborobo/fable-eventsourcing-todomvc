@@ -13,23 +13,7 @@ type TaskFilter =
         | ShowDone -> "Completed"
         | ShowNotDone -> "Active"
 
-type Model =
-    { EventLog: Event list
-      TodoList: TodoList
-      NewTaskTitle: string
-      EditingTask: (TaskId * string) option
-      TaskFilter: TaskFilter }
-
-let initialModel : Model =
-    { EventLog = []
-      TodoList = emptyTodoList
-      NewTaskTitle = ""
-      EditingTask = None
-      TaskFilter = All }
-
-type Msg =
-    | DomainCommand of Command
-    | DomainEvent of Event
+type UIMsg =
     | NewTaskTitleChanged of string
     | ClearNewTaskTitle
     | TaskFilterChanged of TaskFilter
@@ -37,3 +21,35 @@ type Msg =
     | ChangeEdit of string
     | EndEdit
     | CancelEdit
+
+type ConnectionState =
+    | NotConnected
+    | Connected
+    | ConnectionError of string
+
+type ConnectionMsg =
+    | ConnectionChanged of ConnectionState
+    | Connect
+    | Disconnect
+
+type Msg =
+    | DomainCommand of Command
+    | DomainEvent of Event
+    | UIMsg of UIMsg
+    | ConnectionMsg of ConnectionMsg
+
+type Model =
+    { EventLog: Event list
+      TodoList: TodoList
+      NewTaskTitle: string
+      EditingTask: (TaskId * string) option
+      TaskFilter: TaskFilter
+      ConnectionState: ConnectionState }
+
+let initialModel =
+    { EventLog = []
+      TodoList = emptyTodoList
+      NewTaskTitle = ""
+      EditingTask = None
+      TaskFilter = All
+      ConnectionState = NotConnected }

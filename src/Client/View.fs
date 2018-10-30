@@ -23,7 +23,7 @@ let header hasFocus newTaskText dispatch =
               Placeholder "What needs to be done?"
               AutoFocus hasFocus
               Value newTaskText
-              OnChange (fun e -> NewTaskTitleChanged e.Value |> dispatch)
+              OnChange (fun e -> NewTaskTitleChanged e.Value |> UIMsg  |> dispatch)
               OnKeyDown
                 (OnEnter (fun _ -> AddTask newTaskText |> DomainCommand |> dispatch)
                 >> ignore) ] ]
@@ -51,7 +51,7 @@ let taskView dispatch editingTask task =
                     |> DomainCommand
                     |> dispatch) ]
               label
-                [ OnDoubleClick (fun _ -> StartEdit task.Id |> dispatch) ]
+                [ OnDoubleClick (fun _ -> StartEdit task.Id |> UIMsg |> dispatch) ]
                 [ str task.Title ]
               button
                 [ Class "destroy"
@@ -62,11 +62,11 @@ let taskView dispatch editingTask task =
               Value title
               Id id
               AutoFocus isEditing
-              OnChange (fun e -> ChangeEdit e.Value |> dispatch)
-              OnBlur (fun _ -> dispatch EndEdit)
+              OnChange (fun e -> ChangeEdit e.Value |> UIMsg |> dispatch)
+              OnBlur (fun _ -> EndEdit |> UIMsg |> dispatch)
               OnKeyDown
-                (OnEnter (fun _ -> dispatch EndEdit)
-                >> OnEscape (fun _ -> dispatch CancelEdit)
+                (OnEnter (fun _ -> EndEdit |> UIMsg |> dispatch)
+                >> OnEscape (fun _ -> CancelEdit |> UIMsg |> dispatch)
                 >> ignore) ] ]
 
 let main hidden model dispatch =
@@ -99,7 +99,7 @@ let main hidden model dispatch =
 
 let filterButton filter activeFilter dispatch =
     let className = if activeFilter = filter then "selected" else ""
-    li [ OnClick (fun _ -> TaskFilterChanged filter |> dispatch ) ]
+    li [ OnClick (fun _ -> TaskFilterChanged filter |> UIMsg |> dispatch ) ]
         [ a [ Class className ] [ string filter |> str ] ]
 
 let footer' hidden model dispatch =
