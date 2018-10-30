@@ -1,8 +1,12 @@
+module Todo.Server.App
+
 open System
 open System.IO
 open System.Threading.Tasks
 
 open Microsoft.AspNetCore
+open Microsoft.AspNetCore.SignalR
+open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.DependencyInjection
@@ -21,6 +25,7 @@ let webApp =
 let configureApp (app : IApplicationBuilder) =
     app.UseDefaultFiles()
        .UseStaticFiles()
+       .UseSignalR(fun routes -> routes.MapHub<EventHub>(PathString("/hub")))
        .UseGiraffe webApp
 
 let configureServices (services : IServiceCollection) =
@@ -28,6 +33,7 @@ let configureServices (services : IServiceCollection) =
     let fableJsonSettings = Newtonsoft.Json.JsonSerializerSettings()
     fableJsonSettings.Converters.Add(Fable.JsonConverter())
     services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer fableJsonSettings) |> ignore
+    services.AddSignalR() |> ignore
 
 WebHost
     .CreateDefaultBuilder()

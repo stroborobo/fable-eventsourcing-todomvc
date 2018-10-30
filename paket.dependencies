@@ -5,6 +5,7 @@ group Server
     nuget FSharp.Core
     nuget Giraffe
     nuget Microsoft.AspNetCore
+    nuget Microsoft.AspNetCore.SignalR
     nuget Microsoft.AspNetCore.StaticFiles
     nuget Fable.JsonConverter
 
