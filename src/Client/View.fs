@@ -1,5 +1,6 @@
 module Todo.Client.View
 
+open Fable.Import.React
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
@@ -7,27 +8,25 @@ open Todo.Domain.Types
 
 open Model
 
-let OnKey keyValue fn =
-    OnKeyDown (fun event ->
-        if event.key <> keyValue then ()
-        else fn event)
+let OnKey keyValue fn (event: KeyboardEvent) =
+    if event.key <> keyValue then event
+    else fn event; event
 
 let OnEscape = OnKey "Escape"
 let OnEnter = OnKey "Enter"
 
-let header newTaskText dispatch =
-    let addTaskHandler (event: Fable.Import.React.SyntheticEvent) =
-        AddTask newTaskText |> DomainCommand |> dispatch
+let header hasFocus newTaskText dispatch =
     header [ Class "header" ]
         [ h1 [] [str "todos"]
           input
             [ Class "new-todo"
               Placeholder "What needs to be done?"
-              AutoFocus true
+              AutoFocus hasFocus
               Value newTaskText
               OnChange (fun e -> NewTaskTitleChanged e.Value |> dispatch)
-              OnBlur addTaskHandler
-              OnEnter addTaskHandler ] ]
+              OnKeyDown
+                (OnEnter (fun _ -> AddTask newTaskText |> DomainCommand |> dispatch)
+                >> ignore) ] ]
 
 let taskView dispatch editingTask task =
     let isEditing, title =
@@ -62,10 +61,13 @@ let taskView dispatch editingTask task =
             [ Class "edit"
               Value title
               Id id
+              AutoFocus isEditing
               OnChange (fun e -> ChangeEdit e.Value |> dispatch)
-              OnBlur (fun _ -> EndEdit |> dispatch)
-              OnEnter (fun _ -> dispatch EndEdit)
-              OnEscape (fun _ -> dispatch CancelEdit) ] ]
+              OnBlur (fun _ -> dispatch EndEdit)
+              OnKeyDown
+                (OnEnter (fun _ -> dispatch EndEdit)
+                >> OnEscape (fun _ -> dispatch CancelEdit)
+                >> ignore) ] ]
 
 let main hidden model dispatch =
     let allTasksDone = List.forall (fun t -> t.Done) model.TodoList
@@ -142,7 +144,7 @@ let view model dispatch =
     let hidden = List.isEmpty model.TodoList
     div []
         [ section [ Class "todoapp" ]
-            [ header model.NewTaskTitle dispatch
+            [ header model.EditingTask.IsNone model.NewTaskTitle dispatch
               main hidden model dispatch
               footer' hidden model dispatch ]
           info ]
