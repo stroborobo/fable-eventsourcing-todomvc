@@ -12,7 +12,7 @@ open Giraffe
 
 open Giraffe.Serialization
 
-let publicPath = Path.GetFullPath "../Client/public"
+let publicPath = Path.GetFullPath "../Client/dist"
 let port = 8085us
 
 let webApp =
