@@ -39,7 +39,6 @@ let stopConnection() =
         | HubConnection.HubConnectionState.Disconnected
         | _-> NotConnected)
 
-// let subscriptions (_: Model) =
 let subscriptions _ =
     let sub dispatch =
         connection.onclose
