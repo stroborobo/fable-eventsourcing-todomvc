@@ -5,7 +5,12 @@ open System
 
 // MODEL
 
-type TaskId = TaskId of Guid
+type TaskId =
+    | TaskId of Guid
+    with
+    override this.ToString() =
+        let (TaskId guid) = this
+        string guid
 
 type Task =
     { Id: TaskId
@@ -14,8 +19,8 @@ type Task =
 
 type TodoList = Task list
 
-let createEmptyTask () =
-    { Id = Guid.NewGuid() |> TaskId
+let emptyTask =
+    { Id = TaskId Guid.Empty
       Title = ""
       Done = false }
 
@@ -35,7 +40,7 @@ type TaskEvent =
     | Done of bool
 
 type Event =
-    | TaskAdded of string
+    | TaskAdded of TaskId * string
     | TaskChanged of TaskId * TaskEvent
     | TaskDeleted of TaskId
     | AllDone of bool

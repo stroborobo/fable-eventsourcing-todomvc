@@ -17,8 +17,8 @@ let private replaceTask id (fn: Task -> Task) items =
 
 let apply todoList event =
     match event with
-    | TaskAdded title ->
-        { createEmptyTask() with Title = title }
+    | TaskAdded (id, title) ->
+        { emptyTask with Id = id; Title = title }
         |> List.singleton
         |> (@) todoList
     | TaskChanged (id, event) ->

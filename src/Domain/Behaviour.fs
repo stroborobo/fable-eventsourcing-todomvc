@@ -1,10 +1,12 @@
 module Todo.Domain.Behaviour
 
+open System
 open Types
 open Projections
 
 let addTask title =
-    [ TaskAdded title ]
+    if String.IsNullOrWhiteSpace title then [ Error TitleEmpty ]
+    else [ (Guid.NewGuid() |> TaskId, title) |> TaskAdded ]
 
 let deleteTask history id =
     history
@@ -17,7 +19,8 @@ let deleteTask history id =
 let executeTask item command =
     match command with
     | ChangeTitle title ->
-        [ TaskChanged (item.Id, TitleChanged title) ]
+        if String.IsNullOrWhiteSpace title then [ Error TitleEmpty ]
+        else [ TaskChanged (item.Id, TitleChanged title) ]
     | SetDone value ->
         if value && item.Done then [ Error AlreadyDone]
         elif not value && not item.Done then [ Error NotDone]

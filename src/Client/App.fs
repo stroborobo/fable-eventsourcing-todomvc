@@ -2,12 +2,16 @@ module Todo.Client.App
 
 open Elmish
 open Elmish.React
+open Fable.Core
+open Fable.Core.JsInterop
 
 open Todo.Domain
 open Todo.Domain.Types
 
 open Model
 open View
+
+importAll "./public/index.html" |> ignore
 
 let init () =
     initialModel, Cmd.none
@@ -30,10 +34,13 @@ let update msg model =
                 TodoList = Projections.apply model.TodoList event
                 EventLog = model.EventLog @ [event] }
 
+        // follow up messages for ui state
         let cmd =
             match event, model.EditingTask with
             | TaskChanged (taskId, TitleChanged _), Some (editingId, _) when taskId = editingId ->
                 CancelEdit |> Cmd.ofMsg
+            | TaskAdded (_, title), _ when title = model.NewTaskTitle ->
+                ClearNewTaskTitle |> Cmd.ofMsg
             | _ -> Cmd.none
 
         nextModel, cmd
@@ -43,6 +50,8 @@ let update msg model =
 
     | NewTaskTitleChanged title ->
         { model with NewTaskTitle = title }, Cmd.none
+    | ClearNewTaskTitle ->
+        { model with NewTaskTitle = "" }, Cmd.none
     | TaskFilterChanged filter ->
         { model with TaskFilter = filter }, Cmd.none
     | StartEdit taskId ->
@@ -75,8 +84,9 @@ Program.mkProgram init update view
 |> Program.withConsoleTrace
 |> Program.withHMR
 #endif
-|> Program.withReact "elmish-app"
+|> Program.withReactUnoptimized "elmish-app"
+// |> Program.withReact "elmish-app"
 #if DEBUG
-|> Program.withDebugger
+// |> Program.withDebugger
 #endif
 |> Program.run

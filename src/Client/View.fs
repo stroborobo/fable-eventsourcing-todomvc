@@ -8,14 +8,16 @@ open Todo.Domain.Types
 open Model
 
 let OnKey keyValue fn =
-    OnKeyPress (fun event ->
+    OnKeyDown (fun event ->
         if event.key <> keyValue then ()
         else fn event)
 
-let escapeKey = "Escape"
-let enterKey = "Enter"
+let OnEscape = OnKey "Escape"
+let OnEnter = OnKey "Enter"
 
 let header newTaskText dispatch =
+    let addTaskHandler (event: Fable.Import.React.SyntheticEvent) =
+        AddTask newTaskText |> DomainCommand |> dispatch
     header [ Class "header" ]
         [ h1 [] [str "todos"]
           input
@@ -23,8 +25,9 @@ let header newTaskText dispatch =
               Placeholder "What needs to be done?"
               AutoFocus true
               Value newTaskText
-              OnInput (fun e -> NewTaskTitleChanged e.Value |> dispatch)
-              OnKey enterKey (fun _ -> AddTask newTaskText |> DomainCommand |> dispatch) ] ]
+              OnChange (fun e -> NewTaskTitleChanged e.Value |> dispatch)
+              OnBlur addTaskHandler
+              OnEnter addTaskHandler ] ]
 
 let taskView dispatch editingTask task =
     let isEditing, title =
@@ -35,14 +38,15 @@ let taskView dispatch editingTask task =
         let editing = if isEditing then "editing" else ""
         let completed = if task.Done then "completed" else ""
         editing + " " + completed
+    let id = "todo-" + (string task.Id)
 
     li [ Class className ]
         [ div [ Class "view" ]
             [ input
                 [ Class "toggle"
-                  Type "Checkbox"
+                  Type "checkbox"
                   Checked task.Done
-                  OnClick (fun _ ->
+                  OnChange (fun _ ->
                     (task.Id, not task.Done |> SetDone)
                     |> ChangeTask
                     |> DomainCommand
@@ -51,17 +55,17 @@ let taskView dispatch editingTask task =
                 [ OnDoubleClick (fun _ -> StartEdit task.Id |> dispatch) ]
                 [ str task.Title ]
               button
-                [ Class "delete"
+                [ Class "destroy"
                   OnClick (fun _ -> DeleteTask task.Id |> DomainCommand |> dispatch) ]
                 [] ]
           input
             [ Class "edit"
               Value title
-              Id (string task.Id |> (+) "todo-")
-              OnInput (fun e -> ChangeEdit e.Value |> dispatch)
+              Id id
+              OnChange (fun e -> ChangeEdit e.Value |> dispatch)
               OnBlur (fun _ -> EndEdit |> dispatch)
-              OnKey enterKey (fun _ -> dispatch EndEdit)
-              OnKey escapeKey (fun _ -> dispatch CancelEdit) ] ]
+              OnEnter (fun _ -> dispatch EndEdit)
+              OnEscape (fun _ -> dispatch CancelEdit) ] ]
 
 let main hidden model dispatch =
     let allTasksDone = List.forall (fun t -> t.Done) model.TodoList
@@ -110,7 +114,7 @@ let footer' hidden model dispatch =
         [ span [ Class "todo-count" ]
             [ strong [] [ string tasksLeft |> str ]
               str itemsLeftSuffix ]
-          ul [ Class "fiters" ]
+          ul [ Class "filters" ]
             [ filterButton All model.TaskFilter dispatch
               str " "
               filterButton ShowNotDone model.TaskFilter dispatch
@@ -136,8 +140,9 @@ let info =
 
 let view model dispatch =
     let hidden = List.isEmpty model.TodoList
-    section [ Class "todoapp" ]
-        [ header model.NewTaskTitle dispatch
-          main hidden model dispatch
-          footer' hidden model dispatch
+    div []
+        [ section [ Class "todoapp" ]
+            [ header model.NewTaskTitle dispatch
+              main hidden model dispatch
+              footer' hidden model dispatch ]
           info ]

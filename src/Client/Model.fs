@@ -6,7 +6,8 @@ type TaskFilter =
     | All
     | ShowDone
     | ShowNotDone
-with override this.ToString() =
+    with
+    override this.ToString() =
         match this with
         | All -> "All"
         | ShowDone -> "Completed"
@@ -30,6 +31,7 @@ type Msg =
     | DomainCommand of Command
     | DomainEvent of Event
     | NewTaskTitleChanged of string
+    | ClearNewTaskTitle
     | TaskFilterChanged of TaskFilter
     | StartEdit of TaskId
     | ChangeEdit of string
