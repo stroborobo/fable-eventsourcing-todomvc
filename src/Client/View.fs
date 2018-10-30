@@ -131,9 +131,9 @@ let info =
         [ p [] [ str "Double-click to edit a todo" ]
           p []
             [ str "Written by "
-              a [ Href "https://github.com/yannolaf" ] [str "Yann"]
+              a [ Href "https://github.com/yannolaf" ] [ str "Yann" ]
               str " and "
-              a [ Href "https://github.com/stroborobo" ] [str "Björn"] ]
+              a [ Href "https://github.com/stroborobo" ] [ str "Björn" ] ]
           p []
             [ str "Part of "
               a [ Href "http://todomvc.com" ] [ str "TodoMVC" ] ] ]
