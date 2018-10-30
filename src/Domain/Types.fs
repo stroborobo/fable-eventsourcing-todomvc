@@ -24,7 +24,7 @@ let emptyTask =
       Title = ""
       Done = false }
 
-let emptyTodoList = []
+let emptyTodoList: Task list = []
 
 
 // EVENTS

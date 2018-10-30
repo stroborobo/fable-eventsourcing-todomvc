@@ -17,12 +17,13 @@ var CONFIG = {
         ],
         // index: indexHtml,
     },
-    // devServerProxy: {
-    //     '/api/*': {
-    //         target: 'http://localhost:' + (process.env.SUAVE_FABLE_PORT || "8085"),
-    //         changeOrigin: true
-    //     }
-    // },
+    devServerProxy: {
+        "/hub": {
+            target: "ws://localhost:" + (process.env.SUAVE_FABLE_PORT || "8085"),
+            changeOrigin: true,
+            ws: true
+        }
+    },
     historyApiFallback: {
         index: indexHtml
     },

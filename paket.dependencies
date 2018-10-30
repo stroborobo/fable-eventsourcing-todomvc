@@ -5,8 +5,10 @@ group Server
     nuget FSharp.Core
     nuget Giraffe
     nuget Microsoft.AspNetCore
+    nuget Microsoft.AspNetCore.SignalR
     nuget Microsoft.AspNetCore.StaticFiles
     nuget Fable.JsonConverter
+    nuget Thoth.Json.Net
 
 group Shared
     storage: none
@@ -24,6 +26,7 @@ group Client
     nuget Fable.Elmish.React ~> 2
     nuget Fable.Elmish.HMR ~> 2
     nuget Fable.React ~> 4
+    nuget Thoth.Json
 
     clitool dotnet-fable ~> 2
 

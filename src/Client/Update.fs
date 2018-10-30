@@ -37,7 +37,12 @@ let uiUpdate msg model =
 let connectionUpdate msg model =
     match msg with
     | ConnectionChanged state ->
-        { model with ConnectionState = state }, Cmd.none
+        let cmd =
+            match state with
+            | Connected -> getHistory()
+            | _ -> Cmd.none
+
+        { model with ConnectionState = state }, cmd
     | Connect ->
          model, startConnection()
     | Disconnect ->
@@ -48,14 +53,17 @@ let update msg model =
     | UIMsg msg -> uiUpdate msg model
     | ConnectionMsg msg -> connectionUpdate msg model
 
-    | DomainCommand cmd ->
-        let cmd =
-            Behaviour.execute model.EventLog cmd
-            |> List.map (DomainEvent >> Cmd.ofMsg)
-            |> Cmd.batch
-        model, cmd
+    | HistoryLoaded events ->
+        let todoList =
+            (emptyTodoList, events)
+            ||> List.fold (fun todoList event -> Projections.apply todoList event)
+        { model with
+            EventLog = events
+            TodoList = todoList }, Cmd.none
 
-    //| DomainEvent (Error e) ->
+    | DomainCommand cmd ->
+        model, sendCommand cmd
+
     | DomainEvent event ->
         let nextModel =
             { model with
@@ -72,3 +80,5 @@ let update msg model =
             | _ -> Cmd.none
 
         nextModel, cmd
+
+    | NoOp -> model, Cmd.none

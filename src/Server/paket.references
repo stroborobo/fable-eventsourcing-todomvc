@@ -2,5 +2,7 @@ group Server
     FSharp.Core
     Giraffe
     Microsoft.AspNetCore
+    Microsoft.AspNetCore.SignalR
     Microsoft.AspNetCore.StaticFiles
     Fable.JsonConverter
+    Thoth.Json.Net

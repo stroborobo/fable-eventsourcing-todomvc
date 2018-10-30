@@ -147,4 +147,5 @@ let view model dispatch =
             [ header model.EditingTask.IsNone model.NewTaskTitle dispatch
               main hidden model dispatch
               footer' hidden model dispatch ]
-          info ]
+          info
+          p [] [ model.ConnectionState |> string |> str ] ]

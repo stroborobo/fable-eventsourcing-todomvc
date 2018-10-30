@@ -37,6 +37,8 @@ type Msg =
     | DomainEvent of Event
     | UIMsg of UIMsg
     | ConnectionMsg of ConnectionMsg
+    | HistoryLoaded of Event list
+    | NoOp
 
 type Model =
     { EventLog: Event list

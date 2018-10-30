@@ -1,33 +1,36 @@
+module Todo.Server.App
+
 open System
 open System.IO
 open System.Threading.Tasks
 
 open Microsoft.AspNetCore
+open Microsoft.AspNetCore.SignalR
+open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.DependencyInjection
+open Newtonsoft.Json.Serialization
 
 open FSharp.Control.Tasks.V2
-open Giraffe
 
-open Giraffe.Serialization
+open Todo.Server.EventHub
 
 let publicPath = Path.GetFullPath "../Client/dist"
 let port = 8085us
 
-let webApp =
-    choose []
-
 let configureApp (app : IApplicationBuilder) =
     app.UseDefaultFiles()
        .UseStaticFiles()
-       .UseGiraffe webApp
+       .UseSignalR(fun routes -> routes.MapHub<EventHub>(PathString("/hub")))
+    |> ignore
 
 let configureServices (services : IServiceCollection) =
-    services.AddGiraffe() |> ignore
-    let fableJsonSettings = Newtonsoft.Json.JsonSerializerSettings()
-    fableJsonSettings.Converters.Add(Fable.JsonConverter())
-    services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer fableJsonSettings) |> ignore
+    services
+        .AddSignalR()
+        .AddJsonProtocol(fun options ->
+            options.PayloadSerializerSettings.ContractResolver <- new DefaultContractResolver())
+    |> ignore
 
 WebHost
     .CreateDefaultBuilder()
