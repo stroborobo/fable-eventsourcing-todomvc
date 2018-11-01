@@ -39,9 +39,23 @@ let stopConnection() =
         | HubConnection.HubConnectionState.Disconnected
         | _-> NotConnected)
 
+let sendEvents (events: Event list) =
+    let events =
+        events
+        |> List.map (Some)
+        |> Array.ofList
+    Cmd.ofAsync
+        (connection.send("EventsHappened", events) >> Async.AwaitPromise)
+        ()
+        (fun _ ->
+            toConnectionState connection.state
+            |> ConnectionChanged
+            |> ConnectionMsg)
+        (string >> ConnectionError >> ConnectionChanged >> ConnectionMsg)
+
 let subscriptions _ =
     let sub dispatch =
         connection.onclose
             (string >> ConnectionError >> ConnectionChanged >> ConnectionMsg >> dispatch)
-        connection.on<Event list> ("EventReceived", List.iter (DomainEvent >> dispatch))
+        connection.on<Event list> ("EventsHappened", List.iter (DomainEvent >> dispatch))
     Cmd.ofSub sub

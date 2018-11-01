@@ -400,7 +400,7 @@ module IHubProtocol =
         /// The target method name.
         abstract target: string
         /// The target method arguments.
-        abstract arguments: ResizeArray<obj option>
+        abstract arguments: obj option array
 
     /// A hub message representing a streaming invocation.
     type [<AllowNullLiteral>] StreamInvocationMessage =
@@ -411,7 +411,7 @@ module IHubProtocol =
         /// The target method name.
         abstract target: string
         /// The target method arguments.
-        abstract arguments: ResizeArray<obj option>
+        abstract arguments: obj option array
 
     /// A hub message representing a single item produced as part of a result stream.
     type [<AllowNullLiteral>] StreamItemMessage =
@@ -627,7 +627,7 @@ module HubConnection =
         /// <summary>Invokes a streaming hub method on the server using the specified name and arguments.</summary>
         /// <param name="methodName">The name of the server method to invoke.</param>
         /// <param name="args">The arguments used to invoke the server method.</param>
-        abstract stream<'t> : methodName: string * [<ParamArray>] args: ResizeArray<obj option> -> IStreamResult<'t>
+        abstract stream<'t> : methodName: string * [<ParamArray>] args: obj option array -> IStreamResult<'t>
         abstract sendMessage: message: obj -> unit
         /// <summary>Invokes a hub method on the server using the specified name and arguments. Does not wait for a response from the receiver.
         ///
@@ -635,7 +635,7 @@ module HubConnection =
         /// be processing the invocation.</summary>
         /// <param name="methodName">The name of the server method to invoke.</param>
         /// <param name="args">The arguments used to invoke the server method.</param>
-        abstract send: methodName: string * [<ParamArray>] args: ResizeArray<obj option> -> Promise<unit>
+        abstract send: methodName: string * [<ParamArray>] args: obj option array -> Promise<unit>
         /// <summary>Invokes a hub method on the server using the specified name and arguments.
         ///
         /// The Promise returned by this method resolves when the server indicates it has finished invoking the method. When the promise
@@ -657,7 +657,7 @@ module HubConnection =
         /// body is the same) will not remove the handler.</summary>
         /// <param name="methodName">The name of the method to remove handlers for.</param>
         /// <param name="method">The handler to remove. This must be the same Function instance as the one passed to {</param>
-        abstract off: methodName: string * ``method``: (ResizeArray<obj option> -> unit) -> unit
+        abstract off: methodName: string * ``method``: (obj option array -> unit) -> unit
         /// <summary>Registers a handler that will be invoked when the connection is closed.</summary>
         /// <param name="callback">The handler that will be invoked when the connection is closed. Optionally receives a single argument containing the error that caused the connection to close (if any).</param>
         abstract onclose: callback: (Error -> unit) -> unit
