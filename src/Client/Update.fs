@@ -74,10 +74,14 @@ let update msg model =
         let cmd =
             match event, model.EditingTask with
             | TaskChanged (taskId, TitleChanged _), Some (editingId, _) when taskId = editingId ->
-                CancelEdit |> UIMsg |> Cmd.ofMsg
+                Some CancelEdit
+
             | TaskAdded (_, title), _ when title = model.NewTaskTitle ->
-                ClearNewTaskTitle |> UIMsg |> Cmd.ofMsg
-            | _ -> Cmd.none
+                Some ClearNewTaskTitle
+
+            | _ -> None
+            |> Option.map (UIMsg >> Cmd.ofMsg)
+            |> Option.defaultValue Cmd.none
 
         nextModel, cmd
 
